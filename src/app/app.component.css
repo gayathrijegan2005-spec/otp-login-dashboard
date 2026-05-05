@@ -1,0 +1,455 @@
+/* Background */
+.page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #e3f2fd, #fce4ec);
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+}
+
+/* OTP DISPLAY */
+.otp-display {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff3cd;
+  color: #856404;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* Timer */
+.timer {
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* Card (LOGIN ONLY) */
+.card {
+  background: white;
+  padding: 60px;
+  width: 460px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* Heading */
+h2 {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: gray;
+  margin-bottom: 30px;
+}
+
+/* Inputs */
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 15px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Checkbox */
+input[type="checkbox"] {
+  width: auto;
+}
+
+/* Options */
+.options {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgot {
+  color: #2575fc;
+  cursor: pointer;
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  background: #2575fc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+/* OTP Layout */
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 65%;
+  transform: translateY(-50%);
+}
+
+.otp-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.arrow {
+  font-size: 28px;
+}
+
+/* OTP Card */
+.otp-card {
+  background: #efefef;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 340px;
+}
+
+/* OTP Inputs */
+.otp-box {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.otp-box input {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  font-size: 20px;
+}
+
+/* Buttons */
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ok {
+  background: #2575fc;
+  color: white;
+  border: none;
+  padding: 10px;
+}
+
+.cancel {
+  background: gray;
+  color: white;
+  border: none;
+  padding: 10px;
+}
+
+/* Resend */
+.resend-btn {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #2575fc;
+  cursor: pointer;
+}
+
+/* Messages */
+.result-msg {
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+/* ===== CUSTOM POPUP ===== */
+.popup-overlay {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  height: auto;
+  background: transparent;
+  z-index: 1000;
+}
+
+.popup-box {
+  background: white;
+  padding: 20px 25px;
+  border-radius: 10px;
+  text-align: center;
+  width: 320px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.popup-box p {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.popup-box button {
+  padding: 8px 18px;
+  background: #2575fc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+/* ===== DASHBOARD ===== */
+
+.dashboard {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 230px;
+  background: white;
+  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2575fc;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 12px 15px;
+  margin: 8px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sidebar li:hover {
+  background: #f0f4ff;
+}
+
+.sidebar .active {
+  background: #2575fc;
+  color: white;
+}
+
+/* MAIN AREA */
+.main {
+  flex: 1;
+  background: #f5f7fb;
+  padding: 25px;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.topbar h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+  padding: 10px 18px;
+  background: linear-gradient(to right, #ff6a6a, #ff3d3d);
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+}
+
+/* WELCOME CARD */
+.glass-card {
+  background: white;
+  padding: 18px 22px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat {
+  background: white;
+  padding: 18px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.06);
+  transition: 0.3s;
+}
+
+.stat:hover {
+  transform: translateY(-5px);
+}
+
+.stat h2 {
+  color: #2575fc;
+  margin-bottom: 5px;
+}
+
+.stat p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* CONTENT AREA */
+.content-area {
+  margin-top: 10px;
+}
+
+/* CONTENT CARD */
+.content-card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  line-height: 1.6;
+}
+
+/* CONTENT TEXT */
+.content-card h3 {
+  margin-bottom: 15px;
+  color: #2575fc;
+  font-size: 20px;
+}
+
+.content-card p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.content-card b {
+  color: #222;
+}
+
+/* LIST STYLE */
+.content-card ul {
+  padding-left: 18px;
+  margin: 10px 0;
+}
+
+.content-card li {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* SMALL HOVER EFFECT */
+.content-card:hover {
+  transform: translateY(-4px);
+  transition: 0.3s;
+}
+
+/* SMOOTH UI */
+* {
+  transition: all 0.2s ease;
+}
+/* ===== FINAL TEXT ENHANCEMENT ===== */
+
+/* Dashboard titles */
+.content-card h3 {
+  font-size: 26px;        /* bigger */
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+/* Main content text */
+.content-card p {
+  font-size: 17px;        /* bigger */
+  line-height: 1.8;
+}
+
+/* Bold labels (Name, Email, etc.) */
+.content-card b {
+  font-size: 18px;
+  color: #000;
+}
+
+/* Project list */
+.content-card li {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+/* Sidebar menu text */
+.sidebar li {
+  font-size: 17px;
+}
+
+/* Top greeting */
+.topbar h2 {
+  font-size: 28px;        /* bigger greeting */
+}
+
+/* Stats numbers */
+.stat h2 {
+  font-size: 30px;
+}
+
+.stat p {
+  font-size: 16px;
+}
+
+/* Welcome card */
+.glass-card h3 {
+  font-size: 22px;
+}
+
+.glass-card p {
+  font-size: 16px;
+}
