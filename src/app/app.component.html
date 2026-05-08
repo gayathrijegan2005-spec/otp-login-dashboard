@@ -1,88 +1,234 @@
 <!-- LOGIN -->
 <div class="page" *ngIf="!isLoggedIn">
 
+  <!-- OTP MESSAGE -->
   <div class="otp-display" *ngIf="showOTPText">
-    Your OTP: <strong>{{ generatedOTP }}</strong>
-    <div class="timer">Visible for {{ timer }}s</div>
+
+    OTP sent successfully to your Email ✅
+
+    <div class="timer">
+      Visible for {{ timer }}s
+    </div>
+
   </div>
 
   <div class="card">
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Login to continue</p>
 
+    <h2>Welcome Back</h2>
+
+    <p class="subtitle">
+      Login to continue
+    </p>
+
+    <!-- EMAIL -->
     <div class="input-group">
-      <label>Username</label>
-      <input type="text" [(ngModel)]="username">
+
+      <label>Email Address</label>
+
+      <input type="text"
+             [(ngModel)]="username"
+             #emailRef="ngModel"
+             required
+             pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+
+      <!-- REQUIRED ERROR -->
+      <small class="error-text"
+             *ngIf="emailRef.touched && !username">
+
+        Email is required
+
+      </small>
+
+      <!-- INVALID FORMAT -->
+      <small class="error-text"
+             *ngIf="emailRef.touched &&
+                    username &&
+                    emailRef.invalid">
+
+        Enter valid email format
+        <br>
+
+        Examples:
+        <br>
+
+        gayathri&#64;gmail.com
+        <br>
+
+        john&#64;hotmail.com
+        <br>
+
+        alex&#64;outlook.com
+
+      </small>
+
     </div>
 
+    <!-- PASSWORD -->
     <div class="input-group">
+
       <label>Password</label>
-      <input type="password" [(ngModel)]="password">
+
+      <input type="password"
+             [(ngModel)]="password"
+             #passRef="ngModel"
+             required
+             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$">
+
+      <!-- REQUIRED PASSWORD -->
+      <small class="error-text"
+             *ngIf="passRef.touched && !password">
+
+        Password is required
+
+      </small>
+
+      <!-- INVALID PASSWORD -->
+      <small class="error-text"
+             *ngIf="passRef.touched &&
+                    password &&
+                    passRef.invalid">
+
+        Password must contain:
+        <br>
+
+        • Uppercase letter
+        <br>
+
+        • Lowercase letter
+        <br>
+
+        • Number
+        <br>
+
+        • Special character
+
+      </small>
+
     </div>
 
     <div class="options">
+
       <label class="remember">
-        <input type="checkbox"> Remember Me
+
+        <input type="checkbox">
+
+        Remember Me
+
       </label>
-      <span class="forgot">Forgot Password?</span>
+
+      <span class="forgot">
+        Forgot Password?
+      </span>
+
     </div>
 
-    <button class="login-btn" (click)="login()">Login</button>
+    <button class="login-btn"
+            (click)="login()">
+
+      Login
+
+    </button>
+
   </div>
 </div>
 
 <!-- OTP -->
 <div class="overlay" *ngIf="showOTP && !isLoggedIn">
+
   <div class="otp-wrapper">
+
     <div class="arrow">→</div>
 
     <div class="otp-card">
+
       <h3>Verification</h3>
 
       <div class="otp-box">
-        <input maxlength="1" [(ngModel)]="otp1"
+
+        <input maxlength="1"
+               [(ngModel)]="otp1"
+               pattern="[0-9]*"
+               inputmode="numeric"
                (input)="moveNext($event, otp2Input)"
                #otp1Input>
 
-        <input maxlength="1" [(ngModel)]="otp2"
+        <input maxlength="1"
+               [(ngModel)]="otp2"
+               pattern="[0-9]*"
+               inputmode="numeric"
                (input)="moveNext($event, otp3Input)"
                (keydown)="movePrev($event, otp1Input)"
                #otp2Input>
 
-        <input maxlength="1" [(ngModel)]="otp3"
+        <input maxlength="1"
+               [(ngModel)]="otp3"
+               pattern="[0-9]*"
+               inputmode="numeric"
                (input)="moveNext($event, otp4Input)"
                (keydown)="movePrev($event, otp2Input)"
                #otp3Input>
 
-        <!-- ✅ AUTO VERIFY HERE -->
+        <!-- AUTO VERIFY -->
         <input maxlength="1"
                [(ngModel)]="otp4"
+               pattern="[0-9]*"
+               inputmode="numeric"
                (keyup)="onLastInput()"
                (keydown)="movePrev($event, otp3Input)"
                #otp4Input>
+
       </div>
 
       <div class="btn-group">
-        <button class="ok" (click)="verify()">OK</button>
-        <button class="cancel" (click)="cancel()">Cancel</button>
+
+        <button class="ok"
+                (click)="verify()">
+
+          OK
+
+        </button>
+
+        <button class="cancel"
+                (click)="cancel()">
+
+          Cancel
+
+        </button>
+
       </div>
 
-      <button class="resend-btn" (click)="resendOTP()">Resend OTP</button>
+      <button class="resend-btn"
+              (click)="resendOTP()">
+
+        Resend OTP
+
+      </button>
 
       <p class="result-msg"
-         [ngClass]="{'success': message.includes('Successfully'),
-                     'error': message.includes('wrong')}">
+         [ngClass]="{
+           'success': message.includes('Successfully'),
+           'error': message.includes('wrong')
+         }">
+
         {{ message }}
+
       </p>
+
     </div>
   </div>
 </div>
 
 <!-- POPUP -->
 <div class="popup-overlay" *ngIf="showPopup">
+
   <div class="popup-box">
+
     <p>{{ popupMessage }}</p>
-    <button (click)="closePopup()">OK</button>
+
+    <button (click)="closePopup()">
+      OK
+    </button>
+
   </div>
 </div>
 
@@ -90,72 +236,171 @@
 <div class="dashboard" *ngIf="isLoggedIn">
 
   <div class="sidebar">
+
     <h2 class="logo">⚡ MyApp</h2>
 
     <ul>
-      <li [class.active]="activeMenu==='dashboard'" (click)="setMenu('dashboard')">🏠 Dashboard</li>
-      <li [class.active]="activeMenu==='profile'" (click)="setMenu('profile')">👤 Profile</li>
-      <li [class.active]="activeMenu==='projects'" (click)="setMenu('projects')">💼 Projects</li>
-      <li [class.active]="activeMenu==='skills'" (click)="setMenu('skills')">🚀 Skills</li>
-      <li [class.active]="activeMenu==='contact'" (click)="setMenu('contact')">📞 Contact</li>
+
+      <li [class.active]="activeMenu==='dashboard'"
+          (click)="setMenu('dashboard')">
+
+        🏠 Dashboard
+
+      </li>
+
+      <li [class.active]="activeMenu==='profile'"
+          (click)="setMenu('profile')">
+
+        👤 Profile
+
+      </li>
+
+      <li [class.active]="activeMenu==='projects'"
+          (click)="setMenu('projects')">
+
+        💼 Projects
+
+      </li>
+
+      <li [class.active]="activeMenu==='skills'"
+          (click)="setMenu('skills')">
+
+        🚀 Skills
+
+      </li>
+
+      <li [class.active]="activeMenu==='contact'"
+          (click)="setMenu('contact')">
+
+        📞 Contact
+
+      </li>
+
     </ul>
+
   </div>
 
   <div class="main">
 
     <div class="topbar">
-      <h2>{{ userGreeting }}, {{ username }} 👋</h2>
-      <button class="logout-btn" (click)="logout()">Logout</button>
+
+      <h2>
+        {{ userGreeting }}, {{ username }} 👋
+      </h2>
+
+      <button class="logout-btn"
+              (click)="logout()">
+
+        Logout
+
+      </button>
+
     </div>
 
     <div class="glass-card">
-      <h3>✨ Welcome to Gayathri portfolio dashboard</h3>
-      <p>Full Stack Developer skilled in MERN & MEAN stack technologies.</p>
+
+      <h3>
+        ✨ Welcome to Gayathri portfolio dashboard
+      </h3>
+
+      <p>
+        Full Stack Developer skilled in MERN & MEAN stack technologies.
+      </p>
+
     </div>
 
     <div class="stats">
-      <div class="stat"><h2>3</h2><p>Projects</p></div>
-      <div class="stat"><h2>1</h2><p>Internship</p></div>
-      <div class="stat"><h2>5+</h2><p>Technologies</p></div>
-      <div class="stat"><h2>100%</h2><p>Dedication</p></div>
+
+      <div class="stat">
+        <h2>3</h2>
+        <p>Projects</p>
+      </div>
+
+      <div class="stat">
+        <h2>1</h2>
+        <p>Internship</p>
+      </div>
+
+      <div class="stat">
+        <h2>5+</h2>
+        <p>Technologies</p>
+      </div>
+
+      <div class="stat">
+        <h2>100%</h2>
+        <p>Dedication</p>
+      </div>
+
     </div>
 
     <div class="content-area">
 
-      <div *ngIf="activeMenu==='dashboard'" class="content-card">
+      <!-- DASHBOARD -->
+      <div *ngIf="activeMenu==='dashboard'"
+           class="content-card">
+
         <h3>📊 Overview</h3>
-        <p>Motivated IT student skilled in MERN & MEAN stack.</p>
-        <p>Passionate about UI/UX and scalable applications.</p>
+
+        <p>
+          Motivated IT student skilled in MERN & MEAN stack.
+        </p>
+
+        <p>
+          Passionate about UI/UX and scalable applications.
+        </p>
+
       </div>
 
-      <div *ngIf="activeMenu==='profile'" class="content-card">
+      <!-- PROFILE -->
+      <div *ngIf="activeMenu==='profile'"
+           class="content-card">
+
         <h3>👤 About Me</h3>
+
         <p><b>Name:</b> Gayathri J</p>
         <p><b>Phone:</b> +91 9843083785</p>
         <p><b>Email:</b> gayathrijegan2005&#64;gmail.com</p>
         <p><b>Degree:</b> B.Tech IT</p>
         <p><b>College:</b> KCET</p>
         <p><b>CGPA:</b> 7.8</p>
+
       </div>
 
-      <div *ngIf="activeMenu==='projects'" class="content-card">
+      <!-- PROJECTS -->
+      <div *ngIf="activeMenu==='projects'"
+           class="content-card">
+
         <h3>💼 Projects</h3>
+
         <ul>
           <li>🛒 Furniture App</li>
           <li>🛍 Grocery App</li>
           <li>🍎🔍 Fruit Detection</li>
         </ul>
+
       </div>
 
-      <div *ngIf="activeMenu==='skills'" class="content-card">
+      <!-- SKILLS -->
+      <div *ngIf="activeMenu==='skills'"
+           class="content-card">
+
         <h3>🚀 Skills</h3>
-        <p>Angular • React • Node • MongoDB • Java</p>
+
+        <p>
+          Angular • React • Node • MongoDB • Java
+        </p>
+
       </div>
 
-      <div *ngIf="activeMenu==='contact'" class="content-card">
+      <!-- CONTACT -->
+      <div *ngIf="activeMenu==='contact'"
+           class="content-card">
+
         <h3>📞 Contact</h3>
+
         <p>Email: gayathrijegan2005&#64;gmail.com</p>
         <p>Phone: +91 XXXXXXXX</p>
+
       </div>
 
     </div>
