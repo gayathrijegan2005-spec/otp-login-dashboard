@@ -106,18 +106,24 @@
 
     </div>
 
+    <!-- OPTIONS -->
     <div class="options">
 
       <label class="remember">
 
-        <input type="checkbox">
+        <input type="checkbox"
+               [(ngModel)]="rememberMe">
 
         Remember Me
 
       </label>
 
-      <span class="forgot">
+      <!-- FORGOT PASSWORD -->
+      <span class="forgot"
+            (click)="openForgotPassword()">
+
         Forgot Password?
+
       </span>
 
     </div>
@@ -218,8 +224,125 @@
   </div>
 </div>
 
+<!-- FORGOT PASSWORD -->
+
+<div class="popup-overlay"
+     *ngIf="showForgotPassword">
+
+  <div class="popup-box">
+
+    <h3>Forgot Password</h3>
+
+    <input type="text"
+           [(ngModel)]="forgotEmail"
+           placeholder="Enter your email">
+
+    <br><br>
+
+    <button (click)="sendResetOTP()">
+
+      Send OTP
+
+    </button>
+
+    <button (click)="closeForgotPassword()"
+            style="margin-left:10px; background:gray;">
+
+      Cancel
+
+    </button>
+
+  </div>
+
+</div>
+
+<!-- RESET OTP -->
+
+<div class="popup-overlay"
+     *ngIf="showResetOTP">
+
+  <div class="popup-box">
+
+    <h3>Verify Reset OTP</h3>
+
+    <div class="otp-box reset-otp-box">
+
+      <input maxlength="1"
+             [(ngModel)]="resetOtp1"
+             pattern="[0-9]*"
+             inputmode="numeric"
+             (input)="moveNext($event, resetOtp2Input)"
+             #resetOtp1Input>
+
+      <input maxlength="1"
+             [(ngModel)]="resetOtp2"
+             pattern="[0-9]*"
+             inputmode="numeric"
+             (input)="moveNext($event, resetOtp3Input)"
+             (keydown)="movePrev($event, resetOtp1Input)"
+             #resetOtp2Input>
+
+      <input maxlength="1"
+             [(ngModel)]="resetOtp3"
+             pattern="[0-9]*"
+             inputmode="numeric"
+             (input)="moveNext($event, resetOtp4Input)"
+             (keydown)="movePrev($event, resetOtp2Input)"
+             #resetOtp3Input>
+
+      <input maxlength="1"
+             [(ngModel)]="resetOtp4"
+             pattern="[0-9]*"
+             inputmode="numeric"
+             (keydown)="movePrev($event, resetOtp3Input)"
+             #resetOtp4Input>
+
+    </div>
+
+    <button (click)="verifyResetOTP()">
+
+      Verify OTP
+
+    </button>
+
+  </div>
+
+</div>
+
+<!-- NEW PASSWORD -->
+
+<div class="popup-overlay"
+     *ngIf="showNewPasswordSection">
+
+  <div class="popup-box">
+
+    <h3>Create New Password</h3>
+
+    <input type="password"
+           [(ngModel)]="newPassword"
+           placeholder="New Password">
+
+    <br><br>
+
+    <input type="password"
+           [(ngModel)]="confirmPassword"
+           placeholder="Confirm Password">
+
+    <br><br>
+
+    <button (click)="updatePassword()">
+
+      Update Password
+
+    </button>
+
+  </div>
+
+</div>
+
 <!-- POPUP -->
-<div class="popup-overlay" *ngIf="showPopup">
+<div class="popup-overlay"
+     *ngIf="showPopup">
 
   <div class="popup-box">
 

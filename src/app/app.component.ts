@@ -40,6 +40,9 @@ export class AppComponent {
   activeMenu = 'dashboard';
   currentTime = '';
 
+  // REMEMBER ME
+  rememberMe = false;
+
   // OTP LIMIT
   otpAttempts = 0;
   maxOtpAttempts = 5;
@@ -47,6 +50,23 @@ export class AppComponent {
 
   // BLOCKED EMAIL STORAGE
   blockedEmails: string[] = [];
+
+  // FORGOT PASSWORD
+  showForgotPassword = false;
+
+  forgotEmail = '';
+
+  showResetOTP = false;
+
+  resetOtp1 = '';
+  resetOtp2 = '';
+  resetOtp3 = '';
+  resetOtp4 = '';
+
+  showNewPasswordSection = false;
+
+  newPassword = '';
+  confirmPassword = '';
 
   // LOGIN VALIDATION
   login() {
@@ -88,7 +108,7 @@ export class AppComponent {
       return;
     }
 
-    // PERMANENT EMAIL BLOCK CHECK
+    // BLOCK CHECK
     if (
       this.blockedEmails.includes(
         this.username
@@ -102,6 +122,25 @@ export class AppComponent {
       return;
     }
 
+    // SAVE LOGIN DATA
+    if (this.rememberMe) {
+
+      localStorage.setItem(
+        'savedEmail',
+        this.username
+      );
+
+      localStorage.setItem(
+        'savedPassword',
+        this.password
+      );
+
+      localStorage.setItem(
+        'rememberMe',
+        'true'
+      );
+    }
+
     // SHOW OTP
     this.showOTP = true;
 
@@ -109,7 +148,7 @@ export class AppComponent {
     this.generateOTP();
   }
 
-  // SEND OTP TO EMAIL
+  // SEND OTP
   generateOTP() {
 
     this.http.post<any>(
@@ -166,7 +205,6 @@ export class AppComponent {
   // RESEND OTP
   resendOTP() {
 
-    // PERMANENT BLOCK CHECK
     if (
       this.blockedEmails.includes(
         this.username
@@ -221,7 +259,6 @@ export class AppComponent {
   // VERIFY OTP
   verify() {
 
-    // BLOCK CHECK
     if (
       this.blockedEmails.includes(
         this.username
@@ -242,7 +279,6 @@ export class AppComponent {
       this.otp3 +
       this.otp4;
 
-    // VERIFY FROM BACKEND
     this.http.post<any>(
 
       'http://localhost:5000/verify-otp',
@@ -261,13 +297,16 @@ export class AppComponent {
 
         this.setGreeting();
 
-        // RESET ATTEMPTS
         this.otpAttempts = 0;
 
-        // SMOOTH DELAY
         setTimeout(() => {
 
           this.isLoggedIn = true;
+
+          localStorage.setItem(
+            'isLoggedIn',
+            'true'
+          );
 
           this.showOTP = false;
 
@@ -283,15 +322,13 @@ export class AppComponent {
         const remaining =
           this.maxOtpAttempts - this.otpAttempts;
 
-        // LIMIT REACHED
+        // BLOCK EMAIL
         if (this.otpAttempts >= this.maxOtpAttempts) {
 
-          // SAVE BLOCKED EMAIL
           this.blockedEmails.push(
             this.username
           );
 
-          // STORE IN LOCAL STORAGE
           localStorage.setItem(
             'blockedEmails',
             JSON.stringify(this.blockedEmails)
@@ -305,7 +342,6 @@ export class AppComponent {
           this.showPopup = true;
         }
 
-        // SHOW REMAINING ATTEMPTS
         else {
 
           this.message =
@@ -316,6 +352,147 @@ Attempts left: ${remaining}`;
 
       this.clearInputs();
     });
+  }
+
+  // OPEN FORGOT PASSWORD
+  openForgotPassword() {
+
+    this.showForgotPassword = true;
+  }
+
+  // CLOSE FORGOT PASSWORD
+  closeForgotPassword() {
+
+    this.showForgotPassword = false;
+  }
+
+  // SEND RESET OTP
+  sendResetOTP() {
+
+    const emailPattern =
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!emailPattern.test(this.forgotEmail)) {
+
+      this.popupMessage =
+        "Enter valid email address";
+
+      this.showPopup = true;
+
+      return;
+    }
+
+    this.http.post<any>(
+
+      'http://localhost:5000/send-otp',
+
+      {
+        email: this.forgotEmail
+      }
+
+    ).subscribe({
+
+      next: () => {
+
+        this.showForgotPassword = false;
+
+        this.showResetOTP = true;
+
+        this.popupMessage =
+          "Reset OTP sent successfully";
+
+        this.showPopup = true;
+      },
+
+      error: () => {
+
+        this.popupMessage =
+          "Failed to send reset OTP";
+
+        this.showPopup = true;
+      }
+    });
+  }
+
+  // VERIFY RESET OTP
+  verifyResetOTP() {
+
+    const enteredOTP =
+      this.resetOtp1 +
+      this.resetOtp2 +
+      this.resetOtp3 +
+      this.resetOtp4;
+
+    this.http.post<any>(
+
+      'http://localhost:5000/verify-otp',
+
+      {
+        otp: enteredOTP
+      }
+
+    ).subscribe((res) => {
+
+      if (res.success) {
+
+        this.showResetOTP = false;
+
+        this.showNewPasswordSection = true;
+      }
+
+      else {
+
+        this.popupMessage =
+          "Invalid Reset OTP";
+
+        this.showPopup = true;
+      }
+    });
+  }
+
+  // UPDATE PASSWORD
+  updatePassword() {
+
+    const passwordPattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
+
+    if (
+      !passwordPattern.test(
+        this.newPassword
+      )
+    ) {
+
+      this.popupMessage =
+        "Password format is invalid";
+
+      this.showPopup = true;
+
+      return;
+    }
+
+    if (
+      this.newPassword !==
+      this.confirmPassword
+    ) {
+
+      this.popupMessage =
+        "Passwords do not match";
+
+      this.showPopup = true;
+
+      return;
+    }
+
+    // UPDATE PASSWORD
+    this.password =
+      this.newPassword;
+
+    this.showNewPasswordSection = false;
+
+    this.popupMessage =
+      "Password updated successfully";
+
+    this.showPopup = true;
   }
 
   // CLEAR OTP
@@ -340,11 +517,32 @@ Attempts left: ${remaining}`;
 
     this.isLoggedIn = false;
 
-    this.username = '';
-
-    this.password = '';
-
     this.message = '';
+
+    // CLEAR LOGIN STATE
+    localStorage.removeItem(
+      'isLoggedIn'
+    );
+
+    // CLEAR ONLY IF NOT REMEMBERED
+    if (!this.rememberMe) {
+
+      this.username = '';
+
+      this.password = '';
+
+      localStorage.removeItem(
+        'savedEmail'
+      );
+
+      localStorage.removeItem(
+        'savedPassword'
+      );
+
+      localStorage.removeItem(
+        'rememberMe'
+      );
+    }
   }
 
   // CLOSE POPUP
@@ -395,6 +593,42 @@ Attempts left: ${remaining}`;
 
       this.blockedEmails =
         JSON.parse(storedEmails);
+    }
+
+    // LOAD SAVED LOGIN
+    const savedEmail =
+      localStorage.getItem('savedEmail');
+
+    const savedPassword =
+      localStorage.getItem('savedPassword');
+
+    const remember =
+      localStorage.getItem('rememberMe');
+
+    const loggedIn =
+      localStorage.getItem('isLoggedIn');
+
+    if (
+      remember === 'true'
+    ) {
+
+      this.username =
+        savedEmail || '';
+
+      this.password =
+        savedPassword || '';
+
+      this.rememberMe = true;
+    }
+
+    // AUTO LOGIN
+    if (
+      loggedIn === 'true'
+    ) {
+
+      this.isLoggedIn = true;
+
+      this.setGreeting();
     }
 
     // LIVE TIME
