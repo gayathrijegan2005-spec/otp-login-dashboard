@@ -46,10 +46,9 @@ export class AppComponent {
   // OTP LIMIT
   otpAttempts = 0;
   maxOtpAttempts = 5;
-  otpBlocked = false;
 
-  // BLOCKED EMAIL STORAGE
-  blockedEmails: string[] = [];
+  // TEMPORARY BLOCK STORAGE
+  blockedUsers: any = {};
 
   // FORGOT PASSWORD
   showForgotPassword = false;
@@ -71,7 +70,6 @@ export class AppComponent {
   // LOGIN VALIDATION
   login() {
 
-    // ACCEPT ALL VALID EMAILS
     const emailPattern =
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -108,18 +106,42 @@ export class AppComponent {
       return;
     }
 
-    // BLOCK CHECK
-    if (
-      this.blockedEmails.includes(
-        this.username
-      )
-    ) {
+    // CHECK TEMP BLOCK
+    const blockedData =
+      this.blockedUsers[this.username];
 
-      this.popupMessage =
-        "This email address has been blocked due to multiple wrong OTP attempts. Please try with another mail id.";
+    if (blockedData) {
 
-      this.showPopup = true;
-      return;
+      const currentTime =
+        new Date().getTime();
+
+      const oneHour =
+        60 * 60 * 1000;
+
+      if (
+        currentTime - blockedData
+        < oneHour
+      ) {
+
+        this.popupMessage =
+          "Too many wrong OTP attempts. Please try again after 1 hour or contact admin.";
+
+        this.showPopup = true;
+
+        return;
+      }
+
+      else {
+
+        delete this.blockedUsers[
+          this.username
+        ];
+
+        localStorage.setItem(
+          'blockedUsers',
+          JSON.stringify(this.blockedUsers)
+        );
+      }
     }
 
     // SAVE LOGIN DATA
@@ -205,17 +227,29 @@ export class AppComponent {
   // RESEND OTP
   resendOTP() {
 
-    if (
-      this.blockedEmails.includes(
-        this.username
-      )
-    ) {
+    const blockedData =
+      this.blockedUsers[this.username];
 
-      this.popupMessage =
-        "This email address has been blocked due to multiple wrong OTP attempts. Please try with another mail id.";
+    if (blockedData) {
 
-      this.showPopup = true;
-      return;
+      const currentTime =
+        new Date().getTime();
+
+      const oneHour =
+        60 * 60 * 1000;
+
+      if (
+        currentTime - blockedData
+        < oneHour
+      ) {
+
+        this.popupMessage =
+          "Too many wrong OTP attempts. Please try again after 1 hour or contact admin.";
+
+        this.showPopup = true;
+
+        return;
+      }
     }
 
     this.generateOTP();
@@ -259,18 +293,29 @@ export class AppComponent {
   // VERIFY OTP
   verify() {
 
-    if (
-      this.blockedEmails.includes(
-        this.username
-      )
-    ) {
+    const blockedData =
+      this.blockedUsers[this.username];
 
-      this.popupMessage =
-        "This email address has been blocked due to multiple wrong OTP attempts. Please try with another mail id.";
+    if (blockedData) {
 
-      this.showPopup = true;
+      const currentTime =
+        new Date().getTime();
 
-      return;
+      const oneHour =
+        60 * 60 * 1000;
+
+      if (
+        currentTime - blockedData
+        < oneHour
+      ) {
+
+        this.popupMessage =
+          "Too many wrong OTP attempts. Please try again after 1 hour or contact admin.";
+
+        this.showPopup = true;
+
+        return;
+      }
     }
 
     const enteredOTP =
@@ -322,22 +367,23 @@ export class AppComponent {
         const remaining =
           this.maxOtpAttempts - this.otpAttempts;
 
-        // BLOCK EMAIL
+        // BLOCK USER
         if (this.otpAttempts >= this.maxOtpAttempts) {
 
-          this.blockedEmails.push(
+          // BLOCK USER FOR 1 HOUR
+          this.blockedUsers[
             this.username
-          );
+          ] = new Date().getTime();
 
           localStorage.setItem(
-            'blockedEmails',
-            JSON.stringify(this.blockedEmails)
+            'blockedUsers',
+            JSON.stringify(this.blockedUsers)
           );
 
           this.showOTP = false;
 
           this.popupMessage =
-            "This email address has been blocked due to multiple wrong OTP attempts. Please try with another mail id.";
+            "Too many wrong OTP attempts. Please try again after 1 hour or contact admin.";
 
           this.showPopup = true;
         }
@@ -483,7 +529,6 @@ Attempts left: ${remaining}`;
       return;
     }
 
-    // UPDATE PASSWORD
     this.password =
       this.newPassword;
 
@@ -519,12 +564,10 @@ Attempts left: ${remaining}`;
 
     this.message = '';
 
-    // CLEAR LOGIN STATE
     localStorage.removeItem(
       'isLoggedIn'
     );
 
-    // CLEAR ONLY IF NOT REMEMBERED
     if (!this.rememberMe) {
 
       this.username = '';
@@ -585,14 +628,16 @@ Attempts left: ${remaining}`;
   // LIVE TIME
   ngOnInit() {
 
-    // LOAD BLOCKED EMAILS
-    const storedEmails =
-      localStorage.getItem('blockedEmails');
+    // LOAD BLOCKED USERS
+    const blockedData =
+      localStorage.getItem(
+        'blockedUsers'
+      );
 
-    if (storedEmails) {
+    if (blockedData) {
 
-      this.blockedEmails =
-        JSON.parse(storedEmails);
+      this.blockedUsers =
+        JSON.parse(blockedData);
     }
 
     // LOAD SAVED LOGIN
