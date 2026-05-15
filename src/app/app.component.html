@@ -151,12 +151,13 @@
 
       <div class="otp-box">
 
-        <input maxlength="1"
-               [(ngModel)]="otp1"
-               pattern="[0-9]*"
-               inputmode="numeric"
-               (input)="moveNext($event, otp2Input)"
-               #otp1Input>
+        <input id="otp1"
+       maxlength="1"
+       [(ngModel)]="otp1"
+       pattern="[0-9]*"
+       inputmode="numeric"
+       (input)="moveNext($event, otp2Input)"
+       #otp1Input>
 
         <input maxlength="1"
                [(ngModel)]="otp2"
@@ -267,7 +268,8 @@
 
     <div class="otp-box reset-otp-box">
 
-      <input maxlength="1"
+      <input id="resetOtp1"
+             maxlength="1"
              [(ngModel)]="resetOtp1"
              pattern="[0-9]*"
              inputmode="numeric"
@@ -294,6 +296,7 @@
              [(ngModel)]="resetOtp4"
              pattern="[0-9]*"
              inputmode="numeric"
+             (keyup)="onResetLastInput()"
              (keydown)="movePrev($event, resetOtp3Input)"
              #resetOtp4Input>
 
@@ -304,6 +307,24 @@
       Verify OTP
 
     </button>
+
+    <button class="resend-btn"
+            (click)="resendResetOTP()">
+
+      Resend OTP
+
+    </button>
+
+    <p class="result-msg"
+       [ngClass]="{
+         'success': resetMessage.includes('Successfully'),
+         'error': resetMessage.includes('wrong')
+       }">
+
+      {{ resetMessage }}
+
+    </p>
+
 
   </div>
 

@@ -50,6 +50,9 @@ export class AppComponent {
   // TEMPORARY BLOCK STORAGE
   blockedUsers: any = {};
 
+  // USER STORAGE
+  users: any = {};
+
   // FORGOT PASSWORD
   showForgotPassword = false;
 
@@ -61,6 +64,15 @@ export class AppComponent {
   resetOtp2 = '';
   resetOtp3 = '';
   resetOtp4 = '';
+
+  // RESET OTP FEATURES
+  resetMessage = '';
+
+  resetTimer = 5;
+  resetInterval: any;
+
+  resetOtpAttempts = 0;
+  maxResetAttempts = 5;
 
   showNewPasswordSection = false;
 
@@ -104,6 +116,23 @@ export class AppComponent {
 
       this.showPopup = true;
       return;
+    }
+
+    // CHECK STORED PASSWORD
+    if (this.users[this.username]) {
+
+      if (
+        this.users[this.username] !==
+        this.password
+      ) {
+
+        this.popupMessage =
+          "Incorrect password";
+
+        this.showPopup = true;
+
+        return;
+      }
     }
 
     // CHECK TEMP BLOCK
@@ -224,6 +253,25 @@ export class AppComponent {
     }, 1000);
   }
 
+  // RESET OTP TIMER
+  startResetTimer() {
+
+    this.resetTimer = 5;
+
+    clearInterval(this.resetInterval);
+
+    this.resetInterval = setInterval(() => {
+
+      this.resetTimer--;
+
+      if (this.resetTimer === 0) {
+
+        clearInterval(this.resetInterval);
+      }
+
+    }, 1000);
+  }
+
   // RESEND OTP
   resendOTP() {
 
@@ -272,7 +320,7 @@ export class AppComponent {
       this.userGreeting = "Good Evening 🌙";
   }
 
-  // AUTO VERIFY
+  // AUTO VERIFY LOGIN OTP
   onLastInput() {
 
     setTimeout(() => {
@@ -290,7 +338,25 @@ export class AppComponent {
     }, 0);
   }
 
-  // VERIFY OTP
+  // AUTO VERIFY RESET OTP
+  onResetLastInput() {
+
+    setTimeout(() => {
+
+      if (
+        this.resetOtp1 &&
+        this.resetOtp2 &&
+        this.resetOtp3 &&
+        this.resetOtp4
+      ) {
+
+        this.verifyResetOTP();
+      }
+
+    }, 0);
+  }
+
+  // VERIFY LOGIN OTP
   verify() {
 
     const blockedData =
@@ -334,7 +400,7 @@ export class AppComponent {
 
     ).subscribe((res) => {
 
-      // CORRECT OTP
+      // SUCCESS
       if (res.success) {
 
         this.message =
@@ -343,6 +409,15 @@ export class AppComponent {
         this.setGreeting();
 
         this.otpAttempts = 0;
+
+        // SAVE USER
+        this.users[this.username] =
+          this.password;
+
+        localStorage.setItem(
+          'users',
+          JSON.stringify(this.users)
+        );
 
         setTimeout(() => {
 
@@ -367,10 +442,8 @@ export class AppComponent {
         const remaining =
           this.maxOtpAttempts - this.otpAttempts;
 
-        // BLOCK USER
         if (this.otpAttempts >= this.maxOtpAttempts) {
 
-          // BLOCK USER FOR 1 HOUR
           this.blockedUsers[
             this.username
           ] = new Date().getTime();
@@ -396,7 +469,24 @@ Attempts left: ${remaining}`;
         }
       }
 
+      // CLEAR OTP
       this.clearInputs();
+
+      // MOVE CURSOR TO FIRST OTP BOX
+      setTimeout(() => {
+
+        const firstInput =
+          document.getElementById(
+            'otp1'
+          ) as HTMLInputElement;
+
+        if (firstInput) {
+
+          firstInput.focus();
+        }
+
+      }, 0);
+
     });
   }
 
@@ -444,10 +534,10 @@ Attempts left: ${remaining}`;
 
         this.showResetOTP = true;
 
-        this.popupMessage =
-          "Reset OTP sent successfully";
+        this.startResetTimer();
 
-        this.showPopup = true;
+        this.resetMessage =
+          "Reset OTP sent successfully ✅";
       },
 
       error: () => {
@@ -479,21 +569,83 @@ Attempts left: ${remaining}`;
 
     ).subscribe((res) => {
 
+      // SUCCESS
       if (res.success) {
 
-        this.showResetOTP = false;
+        this.resetMessage =
+          "Reset OTP Verified Successfully ✅";
 
-        this.showNewPasswordSection = true;
+        this.resetOtpAttempts = 0;
+
+        setTimeout(() => {
+
+          this.showResetOTP = false;
+
+          this.showNewPasswordSection = true;
+
+        }, 1000);
       }
 
+      // WRONG OTP
       else {
 
-        this.popupMessage =
-          "Invalid Reset OTP";
+        this.resetOtpAttempts++;
 
-        this.showPopup = true;
+        const remaining =
+          this.maxResetAttempts -
+          this.resetOtpAttempts;
+
+        if (
+          this.resetOtpAttempts >=
+          this.maxResetAttempts
+        ) {
+
+          this.popupMessage =
+            "Too many wrong Reset OTP attempts.";
+
+          this.showPopup = true;
+
+          this.showResetOTP = false;
+        }
+
+        else {
+
+          this.resetMessage =
+            `Entered Reset OTP is wrong ❌
+Attempts left: ${remaining}`;
+        }
       }
+
+      // CLEAR RESET OTP
+      this.resetOtp1 = '';
+      this.resetOtp2 = '';
+      this.resetOtp3 = '';
+      this.resetOtp4 = '';
+
+      // MOVE CURSOR TO FIRST RESET OTP BOX
+      setTimeout(() => {
+
+        const firstInput =
+          document.getElementById(
+            'resetOtp1'
+          ) as HTMLInputElement;
+
+        if (firstInput) {
+
+          firstInput.focus();
+        }
+
+      }, 0);
+
     });
+  }
+
+  // RESEND RESET OTP
+  resendResetOTP() {
+
+    this.sendResetOTP();
+
+    this.resetMessage = '';
   }
 
   // UPDATE PASSWORD
@@ -531,6 +683,15 @@ Attempts left: ${remaining}`;
 
     this.password =
       this.newPassword;
+
+    // UPDATE STORED PASSWORD
+    this.users[this.forgotEmail] =
+      this.newPassword;
+
+    localStorage.setItem(
+      'users',
+      JSON.stringify(this.users)
+    );
 
     this.showNewPasswordSection = false;
 
@@ -627,6 +788,16 @@ Attempts left: ${remaining}`;
 
   // LIVE TIME
   ngOnInit() {
+
+    // LOAD USERS
+    const storedUsers =
+      localStorage.getItem('users');
+
+    if (storedUsers) {
+
+      this.users =
+        JSON.parse(storedUsers);
+    }
 
     // LOAD BLOCKED USERS
     const blockedData =
